@@ -105,6 +105,7 @@ begin
     twidth <= ir(14 downto 12) when data_addr else "010";
 
     -- valor inmeditao
+    -- https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/#_immediate_encoding_variants
     with imm_mode select imm_val <=
                 32x"4" when "000",
                 imm_i  when "001",
