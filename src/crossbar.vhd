@@ -1,22 +1,23 @@
 library ieee;
 use ieee.std_logic_1164.all;
+use work.tipos.all;
 
 entity crossbar is 
     generic (
-        type dsm_t
+        constant num_slaves : positive := 1
     );
     port (
-        bus_maddr : std_logic_vector(31 downto 0);
-        bus_mdms : std_logic_vector (31 downto 0);
-        bus_mtwidth : std_logic_vector (2 downto 0);
-        bus_mtms : std_logic;
-        bus_mdsm : std_logic_vector (31 downto 0);
-        bus_saddr : std_logic_vector (31 downto 0);
-        bus_sdms : std_logic_vector (31 downto 0);
-        bus_stwidth : std_logic_vector (2 downto 0);
-        bus_stms : std_logic;
-        bus_sdsm : dsm_t;
-        bus_sact : std_logic_vector (dsm_t'range);
+        bus_maddr : in std_logic_vector(31 downto 0);
+        bus_mdms : in std_logic_vector (31 downto 0);
+        bus_mtwidth : in std_logic_vector (2 downto 0);
+        bus_mtms : in std_logic;
+        bus_sact : in std_logic_vector (num_slaves - 1 downto 0);
+        bus_sdsm : in dsm_t(num_slaves - 1 downto 0);
+        bus_mdsm : out std_logic_vector (31 downto 0);
+        bus_saddr : out std_logic_vector (31 downto 0);
+        bus_sdms : out std_logic_vector (31 downto 0);
+        bus_stwidth : out std_logic_vector (2 downto 0);
+        bus_stms : out std_logic
     );
 end entity;
 
@@ -33,7 +34,7 @@ begin
         variable mux_out : std_logic_vector(31 downto 0);
     begin
         mux_out := 32x"0";
-        for i in dsm_t'range loop
+        for i in num_slaves - 1 downto 0 loop
             if bus_sact(i) then
                 mux_out := mux_out or bus_sdsm(i);
             end if;
