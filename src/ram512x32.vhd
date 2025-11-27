@@ -3,6 +3,9 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity ram512x32 is
+    generic(
+        constant archivo_init : string := ""
+    );
     port (
         clk     : in  std_logic;
         we      : in  std_logic;

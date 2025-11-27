@@ -5,14 +5,13 @@ use work.all;
 
 entity cpu is
     port(
-        clk    : in std_logic;
-        nreset : in std_logic;
-        -- -00 8bit -01 16bit -10 32bit
-        -- 0-- ext.signo 1-- ext.cero
-        twidth : in std_logic_vector (2 downto 0);
-        addr   : in std_logic_vector (31 downto 0);
-        din    : in std_logic_vector (31 downto 0);
-        dout   : out std_logic_vector (31 downto 0)
+        clk        : in std_logic;
+        nreset     : in std_logic;
+        bus_dsm    : in std_logic_vector (31 downto 0);
+        bus_addr   : out std_logic_vector (31 downto 0);
+        bus_dms    : out std_logic_vector (31 downto 0);
+        bus_twidth : out std_logic_vector (2 downto 0);
+        bus_tms    : out std_logic
     );
 end cpu;
 
@@ -59,7 +58,7 @@ begin
     rf_addr_w <= ir(11 downto 7);
     -- x0 solo lectura
     rf_we <= wreg and (or rf_addr_w);
-    rf_din <= din when mem_source else alu_y;
+    rf_din <= bus_dsm when mem_source else alu_y;
 
     U2 : entity rf32x32 port map (
         clk => clk,
@@ -67,7 +66,7 @@ begin
         addr_a => ir(19 downto 15),
         addr_b => ir(24 downto 20),
         addr_w => rf_addr_w,
-        din => rf_din,
+        bus_dsm => rf_din,
         dout_a => rf_dout_a,
         dout_b => rf_dout_b
     );
@@ -92,7 +91,7 @@ begin
                 pc <= pc_next;
             end if;
             if winst then
-                ir <= din;
+                ir <= bus_dsm;
             end if;
         end if;
     end process;
@@ -100,10 +99,11 @@ begin
     pc_next <= alu_y when jump else std_logic_vector(unsigned(pc)+4);
 
     -- Bus del sistema
-    addr <= alu_y when data_addr else pc;
-    dout <= rf_dout_b;
-    twidth <= ir(14 downto 12) when data_addr else "010";
-
+    bus_addr <= alu_y when data_addr else pc;
+    bus_dms <= rf_dout_b;
+    bus_twidth <= ir(14 downto 12) when data_addr else "010";
+    bus_tms <= wmem;
+    
     -- valor inmeditao
     -- https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/#_immediate_encoding_variants
     with imm_mode select imm_val <=
