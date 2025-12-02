@@ -10,7 +10,6 @@ architecture tb of cpu_tb is
     constant num_slaves : positive := 1;
     constant ram_addr_nbits : positive := 9;
     constant ram_base : std_logic_vector (31 downto 0) := 32x"0";
-    type dsm_t is array (num_slaves - 1 downto 0) of std_logic_vector (31 downto 0);
     signal clk        : std_logic;
     signal nreset     : std_logic;
     -- Crossbar
@@ -23,7 +22,7 @@ architecture tb of cpu_tb is
     signal bus_sdms    : std_logic_vector (31 downto 0);
     signal bus_stwidth : std_logic_vector (2 downto 0);
     signal bus_stms    : std_logic;
-    signal bus_sdsm    : dsm_t;
+    signal bus_sdsm    : word_array (num_slaves - 1 downto 0);
     signal bus_sact    : std_logic_vector (num_slaves - 1 downto 0);
     -- Ram
     signal ram_we      : std_logic;
@@ -44,7 +43,7 @@ begin
     );
 
     U_CROSSBAR : entity crossbar generic map (
-        dsm_t => dsm_t
+        num_slaves => num_slaves
     ) port map (
         bus_maddr => bus_maddr,
         bus_mdms => bus_mdms,
@@ -64,17 +63,17 @@ begin
         ram_base => ram_base
     ) port map (
         clk => clk,
-        bus_addr => bus_saddr,
-        bus_dms => bus_sdms,
-        bus_twidth => bus_stwidth,
-        bus_tms  => bus_stms,
-        bus_dsm  => bus_sdsm(0),
-        bus_sact => bus_sact(0),
-        we       => ram_we,
-        mask     => ram_mask,
-        addr     => ram_addr,
-        din      => ram_din,
-        dout     => ram_dout
+        bus_addr     => bus_saddr,
+        bus_dms      => bus_sdms,
+        bus_twidth   => bus_stwidth,
+        bus_tms      => bus_stms,
+        bus_dsm      => bus_sdsm(0),
+        bus_sact     => bus_sact(0),
+        ram_we       => ram_we,
+        ram_mask     => ram_mask,
+        ram_addr     => ram_addr,
+        ram_din      => ram_din,
+        ram_dout     => ram_dout
     );
 
     U_RAM : entity ram512x32 generic map (

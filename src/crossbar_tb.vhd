@@ -15,7 +15,7 @@ architecture tb of crossbar_tb is
     signal bus_mdms : std_logic_vector (31 downto 0);
     signal bus_mtwidth : std_logic_vector (2 downto 0);
     signal bus_mtms : std_logic;
-    signal bus_sdsm : dsm_t (num_slaves-1 downto 0);
+    signal bus_sdsm : word_array (num_slaves-1 downto 0);
     signal bus_sact : std_logic_vector (num_slaves-1 downto 0);
     signal bus_saddr : std_logic_vector (31 downto 0);
     signal bus_sdms : std_logic_vector (31 downto 0);

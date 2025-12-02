@@ -12,7 +12,7 @@ entity crossbar is
         bus_mtwidth : in std_logic_vector (2 downto 0);
         bus_mtms : in std_logic;
         bus_sact : in std_logic_vector (num_slaves - 1 downto 0);
-        bus_sdsm : in dsm_t(num_slaves - 1 downto 0);
+        bus_sdsm : in word_array(num_slaves - 1 downto 0);
         bus_mdsm : out std_logic_vector (31 downto 0);
         bus_saddr : out std_logic_vector (31 downto 0);
         bus_sdms : out std_logic_vector (31 downto 0);
