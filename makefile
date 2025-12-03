@@ -12,7 +12,7 @@ SRCFILES = $(strip $(wildcard $(SRCDIR)/*.vhd))
 
 CONTENTFILE = $(WORKDIR)/$(WORK)-obj$(VHDLSTD).cf
 
-.PHONY: help clean
+.PHONY: help clean progs
 
 define HELP_TEXT =
 Uso:
@@ -25,6 +25,9 @@ endef
 
 help:
 	@echo $(info $(HELP_TEXT))
+
+progs:
+	$(MAKE) -C progs all
 
 clean:
 ifneq ($(wildcard $(OUTDIR)/*),)

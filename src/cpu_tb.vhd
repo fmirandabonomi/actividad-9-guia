@@ -2,11 +2,13 @@ library ieee;
 use ieee.std_logic_1164.all;
 use std.env.finish;
 use work.all;
+use work.tipos.all;
 
 entity cpu_tb is
 end cpu_tb ;
 
 architecture tb of cpu_tb is
+    constant periodo : time := 10 ns;
     constant num_slaves : positive := 1;
     constant ram_addr_nbits : positive := 9;
     constant ram_base : std_logic_vector (31 downto 0) := 32x"0";
@@ -18,7 +20,7 @@ architecture tb of cpu_tb is
     signal bus_mdms    : std_logic_vector (31 downto 0);
     signal bus_mtwidth : std_logic_vector (2 downto 0);
     signal bus_mtms    : std_logic;
-    signal bus_saddr   : std_logic;
+    signal bus_saddr   : std_logic_vector (31 downto 0);
     signal bus_sdms    : std_logic_vector (31 downto 0);
     signal bus_stwidth : std_logic_vector (2 downto 0);
     signal bus_stms    : std_logic;
@@ -77,7 +79,7 @@ begin
     );
 
     U_RAM : entity ram512x32 generic map (
-        archivo_init => "../src/programa"
+        archivo_init => "cpu_tb_prog.txt"
     ) port map (
         clk  => clk,
         we   => ram_we,
@@ -87,5 +89,22 @@ begin
         dout => ram_dout
     );
 
+    RELOJ : process
+    begin
+        clk <= '0';
+        wait for periodo/2;
+        clk <= '1';
+        wait for periodo/2;
+    end process;
+
+    CONTROL_SIM : process
+    begin
+        nreset <= '0';
+        wait until rising_edge(clk);
+        wait for periodo/4;
+        nreset <= '1';
+        wait for 100*periodo;
+        finish;
+    end process;
 
 end architecture ; -- tb

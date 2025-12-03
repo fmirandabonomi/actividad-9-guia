@@ -66,7 +66,7 @@ begin
         addr_a => ir(19 downto 15),
         addr_b => ir(24 downto 20),
         addr_w => rf_addr_w,
-        bus_dsm => rf_din,
+        din    => rf_din,
         dout_a => rf_dout_a,
         dout_b => rf_dout_b
     );
