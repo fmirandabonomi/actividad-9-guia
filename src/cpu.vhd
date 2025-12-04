@@ -35,6 +35,11 @@ architecture arch of cpu is
     signal rf_addr_w : std_logic_vector (4 downto 0);
     -- inmediato
     signal imm_val, imm_i, imm_s, imm_b, imm_u, imm_j : reg32_t;
+    -- fn_alu
+    signal alu_fn_i : std_logic_vector (3 downto 0);
+    signal alu_fn_r : std_logic_vector (3 downto 0);
+    signal alu_fn_b : std_logic_vector (3 downto 0);
+    
 begin
 
     U1 : entity control_cpu port map (
@@ -119,5 +124,14 @@ begin
     imm_u <= ir(31 downto 12) & (11 downto 0 => '0');
     imm_j <= (31 downto 20 => ir(31)) & ir(19 downto 12) & ir(20) & ir(30 downto 21) & "0";
 
-
+    -- Función ALU, funct3 es ir(14 downto 12) y funct7(5) es ir(30)
+    with alu_mode select alu_fn <=
+                alu_fn_i when "01",
+                alu_fn_r when "10",
+                alu_fn_b when "11",
+                "0000" when others; -- "00"
+    alu_fn_i <= ir(14 downto 12) & (ir(30) and ir(12));
+    alu_fn_r <= ir(14 downto 12) & ir(30);
+    alu_fn_b <= "0" & ir(14 downto 13) & "1";
+    
 end arch ; -- arch
