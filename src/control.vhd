@@ -26,7 +26,7 @@ architecture arch of control_cpu is
     type estado_t is (INICIO, LEE_MEM_PC, CARGA_IR, DECODIFICA , LEE_MEM_DAT_INC_PC, CARGA_RD_DE_MEM);
     signal estado_sig, estado : estado_t;
 
-    constant OPC_LOAD : std_logic_vector (6 downto 0) := 0x3;
+    constant OPC_LOAD : std_logic_vector (6 downto 0) := 7x"3";
 begin
 
     registros : process (clk)
