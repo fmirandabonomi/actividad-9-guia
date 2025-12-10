@@ -16,7 +16,7 @@ all : $(OUT_DIR)/cpu_tb_prog.txt
 
 $(OUT_DIR)/cpu_tb_prog.txt : $(BUILD_DIR)/cpu_tb_prog.elf
 	$(OBJCOPY) -O binary $(BUILD_DIR)/cpu_tb_prog.elf $(BUILD_DIR)/cpu_tb_prog.bin
-	xxd -c 4 -g 4 -R never $(BUILD_DIR)/cpu_tb_prog.bin | sed -nE '{s/^\S+\s+(\S+).*/\1/ ; p}'	>$(OUT_DIR)/cpu_tb_prog.txt
+	xxd -c 4 -e -g 4 -R never $(BUILD_DIR)/cpu_tb_prog.bin | sed -nE '{s/^\S+\s+(\S+).*/\1/ ; p}'	>$(OUT_DIR)/cpu_tb_prog.txt
 
 $(BUILD_DIR)/cpu_tb_prog.elf : $(BUILD_DIR)/cpu_tb_prog.o
 	$(LD) $(LDFLAGS) -o $(BUILD_DIR)/cpu_tb_prog.elf $(BUILD_DIR)/cpu_tb_prog.o
