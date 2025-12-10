@@ -139,6 +139,6 @@ begin
     -- Evaluación de condición para salto condicional en función de la bandera
     -- cero de la alu, para cada caso, en función de funct3
     with ir(14 downto 12) select take_branch <=
-                z when "000" | "101" | "111", -- igual, mayor o igual (el resultado cero es afirmativo)
-                not z when others; -- distinto, menor (el resultado cero es negativo)
+                alu_z when "000" | "101" | "111", -- igual, mayor o igual (el resultado cero es afirmativo)
+                not alu_z when others; -- distinto, menor (el resultado cero es negativo)
 end arch ; -- arch
