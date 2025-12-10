@@ -135,5 +135,10 @@ begin
     alu_fn_i <= ir(14 downto 12) & (ir(30) and ir(12));
     alu_fn_r <= ir(14 downto 12) & ir(30);
     alu_fn_b <= "0" & ir(14 downto 13) & "1";
-    
+
+    -- Evaluación de condición para salto condicional en función de la bandera
+    -- cero de la alu, para cada caso, en función de funct3
+    with ir(14 downto 12) select take_branch <=
+                z when "000" | "101" | "111", -- igual, mayor o igual (el resultado cero es afirmativo)
+                not z when others; -- distinto, menor (el resultado cero es negativo)
 end arch ; -- arch
