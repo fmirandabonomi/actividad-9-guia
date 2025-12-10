@@ -22,9 +22,10 @@ architecture arch of cpu is
     signal ir : reg32_t; -- Registro de instrucción
     -- Unidad de control
     signal jump, s1pc, wpc, wmem, wreg, sel_imm : std_logic;
-    signal data_addr, mem_source, winst : std_logic;
+    signal data_addr, mem_source, imm_source, winst : std_logic;
     signal alu_mode : std_logic_vector (1 downto 0);
     signal imm_mode : std_logic_vector (2 downto 0);
+    signal take_branch : std_logic;
     -- ALU
     signal alu_a, alu_b, alu_y : reg32_t;
     signal alu_z : std_logic;
@@ -45,7 +46,7 @@ begin
     U1 : entity control_cpu port map (
         clk => clk,
         nreset => nreset,
-        z => alu_z,
+        take_branch => take_branch,
         op => ir(6 downto 0),
         jump => jump,
         s1pc => s1pc,
@@ -55,6 +56,7 @@ begin
         sel_imm => sel_imm,
         data_addr => data_addr,
         mem_source => mem_source,
+        imm_source => imm_source,
         winst => winst,
         alu_mode => alu_mode,
         imm_mode => imm_mode
@@ -63,7 +65,7 @@ begin
     rf_addr_w <= ir(11 downto 7);
     -- x0 solo lectura
     rf_we <= wreg and (or rf_addr_w);
-    rf_din <= bus_dsm when mem_source else alu_y;
+    rf_din <= bus_dsm when mem_source else imm_val when imm_source else alu_y;
 
     U2 : entity rf32x32 port map (
         clk => clk,

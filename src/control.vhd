@@ -6,7 +6,7 @@ entity control_cpu is
     port (
         clk        : in  std_logic;
         nreset     : in  std_logic;
-        z          : in  std_logic;
+        take_branch: in  std_logic;
         op         : in  std_logic_vector (6 downto 0);
         jump       : out std_logic;
         s1pc       : out std_logic;
@@ -16,6 +16,7 @@ entity control_cpu is
         sel_imm    : out std_logic;
         data_addr  : out std_logic;
         mem_source : out std_logic;
+        imm_source : out std_logic;
         winst      : out std_logic;
         alu_mode   : out std_logic_vector (1 downto 0);
         imm_mode   : out std_logic_vector (2 downto 0)
@@ -26,7 +27,13 @@ architecture arch of control_cpu is
     type estado_t is (INICIO, LEE_MEM_PC, CARGA_IR, DECODIFICA , LEE_MEM_DAT_INC_PC, CARGA_RD_DE_MEM);
     signal estado_sig, estado : estado_t;
 
-    constant OPC_LOAD : std_logic_vector (6 downto 0) := 7x"3";
+    subtype imm_mode_t is std_logic_vector (2 downto 0);
+    constant IMM_CONST_4 : imm_mode_t := "000";
+    constant IMM_I : imm_mode_t := "001";
+    constant IMM_S : imm_mode_t := "010";
+    constant IMM_B : imm_mode_t := "011";
+    constant IMM_U : imm_mode_t := "100";
+    constant IMM_J : imm_mode_t := "101";
 begin
 
     registros : process (clk)
@@ -74,10 +81,11 @@ begin
         jump <= '0';
         s1pc <= '0';
         alu_mode <= "00";
-        imm_mode <= "000";
+        imm_mode <= IMM_CONST_4;
         sel_imm <= '0';
         data_addr <= '0';
         mem_source <= '0';
+        imm_source <= '0';
         case (estado) is
             when INICIO =>
                 -- por defecto
@@ -90,6 +98,7 @@ begin
             when LEE_MEM_DAT_INC_PC =>
                 alu_mode <= "00";
                 sel_imm <= '1';
+                imm_mode <= IMM_I;
                 data_addr <= '1';
                 wpc <= '1';
             when CARGA_RD_DE_MEM =>
