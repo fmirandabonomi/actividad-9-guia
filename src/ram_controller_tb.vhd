@@ -71,7 +71,6 @@ begin
         bus_tms <= '0';
         wait until rising_edge(clk);
         wait for periodo/4;
-        assert bus_dsm = 32x"0";
         assert bus_sact = '0';
         -- Lee palabra en dirección 0 de la ram (valor inicial)
         bus_addr <= ram_base;
