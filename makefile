@@ -29,6 +29,9 @@ help:
 progs:
 	$(MAKE) -C progs all
 
+progs.%:
+	$(MAKE) -C progs $(*F)
+
 clean:
 ifneq ($(wildcard $(OUTDIR)/*),)
 	rm $(wildcard $(OUTDIR)/*)

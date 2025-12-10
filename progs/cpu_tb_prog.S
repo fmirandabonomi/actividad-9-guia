@@ -3,10 +3,10 @@ val_a: .word 5
 val_b: .word 4
 resultado: .word 0
 
-.section .text.init
-.globl reset
+.section .text.startup
+.globl _start
 
-reset:
+_start:
     lw x1, val_a
     lw x2, val_b
     add x3, x1, x2

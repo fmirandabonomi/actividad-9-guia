@@ -1,3 +1,7 @@
+.SUFFIXES:
+
+.SECONDARY:
+
 BUILD_DIR = ../build/progs
 OUT_DIR = ../build
 
@@ -12,21 +16,30 @@ CCFLAGS = $(ARCH) -Wall -Wextra -Werror
 ASFLAGS = $(ARCH)
 LDFLAGS = $(ARCH) -T link_script.ld -nostartfiles -nodefaultlibs
 
+CPROGS = $(basename $(wildcard *.c))
+CINIT = $(BUILD_DIR)/c_init.o
+
+-include $(BUILD_DIR)/*.d
+
 all : $(OUT_DIR)/cpu_tb_prog.txt
 
-$(OUT_DIR)/cpu_tb_prog.txt : $(BUILD_DIR)/cpu_tb_prog.elf
-	$(OBJCOPY) -O binary $(BUILD_DIR)/cpu_tb_prog.elf $(BUILD_DIR)/cpu_tb_prog.bin
-	xxd -c 4 -e -g 4 -R never $(BUILD_DIR)/cpu_tb_prog.bin | sed -nE '{s/^\S+\s+(\S+).*/\1/ ; p}'	>$(OUT_DIR)/cpu_tb_prog.txt
+% : $(OUT_DIR)/%.txt ;
 
-$(BUILD_DIR)/cpu_tb_prog.elf : $(BUILD_DIR)/cpu_tb_prog.o
-	$(LD) $(LDFLAGS) -o $(BUILD_DIR)/cpu_tb_prog.elf $(BUILD_DIR)/cpu_tb_prog.o
+$(OUT_DIR)/%.txt : $(BUILD_DIR)/%.elf
+	$(OBJCOPY) -O binary $^ $(BUILD_DIR)/$(*F).bin
+	xxd -c 4 -e -g 4 -R never $(BUILD_DIR)/$(*F).bin | sed -nE '{s/^\S+\s+(\S+).*/\1/ ; p}'	>$@
 
-$(BUILD_DIR)/cpu_tb_prog.o : cpu_tb_prog.S | $(BUILD_DIR)
-	$(AS) $(ASFLAGS) -o $(BUILD_DIR)/cpu_tb_prog.o cpu_tb_prog.S
+$(BUILD_DIR)/%.elf : $(BUILD_DIR)/%.o
+	$(LD) $(LDFLAGS) -o $@ $^ $(if $(findstring $(*F),$(CPROGS)),$(CINIT))
+
+$(BUILD_DIR)/%.o : %.S | $(BUILD_DIR)
+	$(AS) $(ASFLAGS) -o $@ $<
+
+$(BUILD_DIR)/%.o : %.c | $(BUILD_DIR) $(CINIT)
+	$(CC) $(CCFLAGS) -c -MMD -o $@ $<
 
 $(BUILD_DIR) :
 	mkdir -p $(BUILD_DIR)
 
 clean:
 	rm -rf $(BUILD_DIR)
-# xxd -c 4 -g 4 -R never cpu_tb_prog.bin  | sed -nE '{s/^\S+\s+(\S+).*/\1/ ; p}'
