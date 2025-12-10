@@ -1,6 +1,6 @@
-static int a = 5;
-static int b = 4;
-static int c;
+volatile int a = 5;
+volatile int b = 4;
+volatile int c;
 
 int main(void)
 {
